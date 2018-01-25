@@ -1,0 +1,141 @@
+version: '2'
+services:
+  web:
+    image: sucloud/sucloud-web
+    restart: always
+    volumes:
+      - /var/log/nginx:/var/log/nginx
+      - /etc/localtime:/etc/localtime
+    ports:
+      - "8080:80"
+      - "443:443"
+    depends_on:
+      - db
+      - manager
+      - kvm
+      - docker
+      - hyperv
+      - scheduler
+      - download
+
+  db:
+    image: sucloud/sucloud-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: gncloud
+      MYSQL_DATABASE: gncloud
+      MYSQL_USER: gncloud
+      MYSQL_PASSWORD: gncloud
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /data/mysql:/var/lib/mysql
+
+  download:
+      image: sucloud/sucloud-downloadfilemanager
+      volumes:
+        - /data:/data
+        - /var/log/sucloud:/var/log/sucloud
+      restart: always
+      depends_on:
+        - db
+
+  manager:
+    image: sucloud/sucloud-manager
+    volumes:
+      - /var/log/sucloud:/var/log/sucloud
+      - /root/.ssh:/root/.ssh
+      - /etc/localtime:/etc/localtime
+      - /data/nas/images/kvm/base:/var/lib/sucloud/Manager/images/kvm
+      - /data/nas/images/hyperv/base:/var/lib/sucloud/Manager/images/hyperv
+      - /var/lib/sucloud/Manager/upload:/var/lib/sucloud/Manager/upload
+    restart: always
+    environment:
+      WSGI_PROCESSES: 8
+      NETWORK_DRIVE: /data/nas
+      LOCAL_DRIVE: /data/local
+    depends_on:
+      - db
+
+  kvm:
+    image: sucloud/sucloud-kvm
+    volumes:
+      - /var/log/sucloud:/var/log/sucloud
+      - /root/.ssh:/root/.ssh
+      - /etc/localtime:/etc/localtime
+      - /var/lib/sucloud/KVM/script/initcloud:/var/lib/sucloud/KVM/script/initcloud
+    restart: always
+    environment:
+      WSGI_PROCESSES: 8
+      NETWORK_DRIVE: /data/nas
+      LOCAL_DRIVE: /data/local
+    depends_on:
+      - db
+
+  hyperv:
+    image: sucloud/sucloud-hyperv
+    volumes:
+      - /var/log/sucloud:/var/log/sucloud
+      - /root/.ssh:/root/.ssh
+      - /etc/localtime:/etc/localtime
+    restart: always
+    environment:
+      WSGI_PROCESSES: 8
+      LOCAL_DRIVE_LETTER: C
+      NETWORK_DRIVE_LETTER: Z
+    depends_on:
+      - db
+
+
+  docker:
+    image: sucloud/sucloud-docker
+    volumes:
+      - /var/log/sucloud:/var/log/sucloud
+      - /root/.ssh:/root/.ssh
+      - /etc/localtime:/etc/localtime
+    restart: always
+    environment:
+      WSGI_PROCESSES: 8
+    depends_on:
+      - db
+
+
+  scheduler:
+    image: sucloud/sucloud-scheduler
+    volumes:
+      - /var/log/sucloud:/var/log/sucloud
+      - /root/.ssh:/root/.ssh
+      - /etc/localtime:/etc/localtime
+    restart: always
+    environment:
+      WSGI_PROCESSES: 1
+      WSGI_THREADS: 2
+      LOCAL_DRIVE_LETTER: C
+      NETWORK_DRIVE_LETTER: C
+      NETWORK_DRIVE: /data/nas
+      LOCAL_DRIVE: /data/local
+    depends_on:
+      - db
+
+  registry:
+    image: sucloud/sucloud-registry
+    restart: always
+    volumes:
+      - /data/registry:/var/lib/registry
+    ports:
+      - "5000:5000"
+
+#  proxy:
+#    image : magneticio/vamp-router
+#    restart: always
+#    network_mode: "host"
+#    command : ["-port=9999"]
+#    volumes:
+#      - /opt/docker/configuration:/opt/docker/configuration
+# ssh-keygen -f ~/.ssh/id_rsa
+# ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.1.2
+# ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.1.201
+# ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.1.202
+# ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.1.203
+# ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.1.204
