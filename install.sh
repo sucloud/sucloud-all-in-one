@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-mkdir -p /var/log/gncloud
+mkdir -p /var/log/sucloud
 mkdir -p /home/data
 ln -s /home/data /data
 mkdir -p /data/mysql
@@ -11,7 +11,7 @@ mkdir -p /data/nas/images/kvm/base
 mkdir -p /data/nas/images/kvm/snapshot
 mkdir -p /data/nas/images/kvm/backup
 
-mkdir -p /var/lib/gncloud
+mkdir -p /var/lib/sucloud
 mkdir -p /var/log/nginx
 mkdir -p /opt/docker/configuration
 
@@ -22,11 +22,11 @@ yum -y install epel-release
 yum -y install git
 mkdir -p /data/git
 cd /data/git
-git clone https://github.com/gncloud/gncloud-all-in-one.git
-cp -R /data/git/gncloud-all-in-one/KVM /var/lib/gncloud/KVM
-cp -R /data/git/gncloud-all-in-one/configuration /opt/docker/configuration
-cp /data/git/gncloud-all-in-one/docker-compose.yml ~/docker-compose.yml
-chmod 777 /var/lib/gncloud/KVM/script/*sh
+git clone https://github.com/sucloud/sucloud-all-in-one.git
+cp -R /data/git/sucloud-all-in-one/KVM /var/lib/sucloud/KVM
+cp -R /data/git/sucloud-all-in-one/configuration /opt/docker/configuration
+cp /data/git/sucloud-all-in-one/docker-compose.yml ~/docker-compose.yml
+chmod 777 /var/lib/sucloud/KVM/script/*sh
 
 rm -rf /data/git
 
@@ -62,7 +62,7 @@ fi
 chmod 777 /var
 chmod 777 /var/log
 chmod 777 /var/log/nginx
-chmod 777 /var/log/gncloud
+chmod 777 /var/log/sucloud
 
 # 베이스이비지 복사
 # USB 등
@@ -148,16 +148,16 @@ cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
 
 # user-data 생성
 
-> /var/lib/gncloud/KVM/script/initcloud/user-data
-echo "#cloud-config" >> /var/lib/gncloud/KVM/script/initcloud/user-data
-echo "password: gncloud" >> /var/lib/gncloud/KVM/script/initcloud/user-data
-echo "chpasswd: {expire: False}" >> /var/lib/gncloud/KVM/script/initcloud/user-data
-echo "ssh_pwauth: true" >> /var/lib/gncloud/KVM/script/initcloud/user-data
-echo "ssh_authorized_keys:" >> /var/lib/gncloud/KVM/script/initcloud/user-data
-echo " - `cat ~/.ssh/id_rsa.pub`" >> /var/lib/gncloud/KVM/script/initcloud/user-data
-echo "runcmd:" >> /var/lib/gncloud/KVM/script/initcloud/user-data
+> /var/lib/sucloud/KVM/script/initcloud/user-data
+echo "#cloud-config" >> /var/lib/sucloud/KVM/script/initcloud/user-data
+echo "password: sucloud" >> /var/lib/sucloud/KVM/script/initcloud/user-data
+echo "chpasswd: {expire: False}" >> /var/lib/sucloud/KVM/script/initcloud/user-data
+echo "ssh_pwauth: true" >> /var/lib/sucloud/KVM/script/initcloud/user-data
+echo "ssh_authorized_keys:" >> /var/lib/sucloud/KVM/script/initcloud/user-data
+echo " - `cat ~/.ssh/id_rsa.pub`" >> /var/lib/sucloud/KVM/script/initcloud/user-data
+echo "runcmd:" >> /var/lib/sucloud/KVM/script/initcloud/user-data
 echo " - [ sh, -c, echo \" `cat ~/.ssh/id_rsa.pub`\" >> ~/.ssh/authorized_keys ] " >> \
-    /var/lib/gncloud/KVM/script/initcloud/user-data
+    /var/lib/sucloud/KVM/script/initcloud/user-data
 
 systemctl enable libvirtd
 systemctl start libvirtd
@@ -202,11 +202,11 @@ docker-compose up -d
 #docker swarm init --advertise-addr $IPADDR
 
 # user-data를 kvm container에 복사
-tar -cv /var/lib/gncloud/KVM/script/initcloud/user-data | docker exec -i root_kvm_1 tar x -C /
+tar -cv /var/lib/sucloud/KVM/script/initcloud/user-data | docker exec -i root_kvm_1 tar x -C /
 
 # 기존의 config.iso를 삭제하고 새로 생성한다
-rm -f /var/lib/gncloud/KVM/script/initcloud/config.iso
-/var/lib/gncloud/KVM/script/sshkey_copy.sh
+rm -f /var/lib/sucloud/KVM/script/initcloud/config.iso
+/var/lib/sucloud/KVM/script/sshkey_copy.sh
 
 sync
 sync
