@@ -1,9 +1,9 @@
  #!/bin/bash
 
 vm_name=$1
-bridge_name="br0"
+bridge_name="virbr0"
 
-mac_address=`virsh dumpxml ${vm_name} | grep "mac address" | cut -d "'" -f 2`
+mac_address=`virsh dumpxml ${vm_name} | grep "mac address" | cut -d "'" -f 2 | head -1`
 
 arp_scan_record=`arp-scan --interface ${bridge_name} -l | grep $mac_address`
 
