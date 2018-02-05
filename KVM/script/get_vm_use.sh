@@ -9,6 +9,6 @@ elif [ $1 = "mem" ]; then
 elif [ $1 = "disk" ]; then
  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${user}@${ip} df -P | grep -v ^Filesystem | awk '{sum += $3} END { print sum*1024}'
 elif [ $1 = "net" ]; then
- ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${user}@${ip} netstat -i | grep eth0 | awk '{print $3}'
+ ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${user}@${ip} netstat -i | grep -v lo | grep -v MTU | grep -v table | awk '{print $3}'
 fi
 

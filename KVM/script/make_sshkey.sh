@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 path=$1
 org=$2
 pub=$3
