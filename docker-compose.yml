@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    image: sucloud/sucloud-web
+    image: sucloud/sucloud2-web
     restart: always
     volumes:
       - /var/log/nginx:/var/log/nginx
@@ -19,7 +19,7 @@ services:
       - download
 
   db:
-    image: sucloud/sucloud-mysql
+    image: sucloud/sucloud2-mysql
     restart: always
     ports:
       - "3306:3306"
@@ -33,18 +33,18 @@ services:
       - /data/mysql:/var/lib/mysql
 
   download:
-      image: sucloud/sucloud-downloadfilemanager
+      image: sucloud/sucloud2-downloadfilemanager
       volumes:
         - /data:/data
-        - /var/log/sucloud:/var/log/sucloud
+        - /var/log/sucloud:/var/log/sucloud2
       restart: always
       depends_on:
         - db
 
   manager:
-    image: sucloud/sucloud-manager
+    image: sucloud/sucloud2-manager
     volumes:
-      - /var/log/sucloud:/var/log/sucloud
+      - /var/log/sucloud:/var/log/sucloud2
       - /root/.ssh:/root/.ssh
       - /etc/localtime:/etc/localtime
       - /data/nas/images/kvm/base:/var/lib/sucloud/Manager/images/kvm
@@ -59,9 +59,9 @@ services:
       - db
 
   kvm:
-    image: sucloud/sucloud-kvm
+    image: sucloud/sucloud2-kvm
     volumes:
-      - /var/log/sucloud:/var/log/sucloud
+      - /var/log/sucloud:/var/log/sucloud2
       - /root/.ssh:/root/.ssh
       - /etc/localtime:/etc/localtime
       - /var/lib/sucloud/KVM/script/initcloud:/var/lib/sucloud/KVM/script/initcloud
@@ -74,9 +74,9 @@ services:
       - db
 
   hyperv:
-    image: sucloud/sucloud-hyperv
+    image: sucloud/sucloud2-hyperv
     volumes:
-      - /var/log/sucloud:/var/log/sucloud
+      - /var/log/sucloud:/var/log/sucloud2
       - /root/.ssh:/root/.ssh
       - /etc/localtime:/etc/localtime
     restart: always
@@ -89,9 +89,9 @@ services:
 
 
   docker:
-    image: sucloud/sucloud-docker
+    image: sucloud/sucloud2-docker
     volumes:
-      - /var/log/sucloud:/var/log/sucloud
+      - /var/log/sucloud:/var/log/sucloud2
       - /root/.ssh:/root/.ssh
       - /etc/localtime:/etc/localtime
     restart: always
@@ -102,9 +102,9 @@ services:
 
 
   scheduler:
-    image: sucloud/sucloud-scheduler
+    image: sucloud/sucloud2-scheduler
     volumes:
-      - /var/log/sucloud:/var/log/sucloud
+      - /var/log/sucloud:/var/log/sucloud2
       - /root/.ssh:/root/.ssh
       - /etc/localtime:/etc/localtime
     restart: always
